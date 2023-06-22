@@ -3,9 +3,7 @@ import numpy as np
 import os
 from matplotlib import pyplot as plt
 from PIL import Image
-import argparse
 import numpy
-import scipy.misc
 import math
 def init_circle_data(path):
     f = open(path+'/circle_data.txt', encoding='utf-8')
@@ -31,6 +29,7 @@ def generate_mask(path):
     file = path + '/' + image_list[0]
     img = cv2.imread(file)
     shape = img.shape
+    print(shape)
     h, w = shape[0], shape[1]
     shape = np.array(shape)
     mask = np.zeros(shape, np.uint8)
@@ -38,18 +37,13 @@ def generate_mask(path):
     for y in range(h):
         for x in range(w):
             if (x - cx) ** 2 + (y - cy) ** 2 <= r ** 2:
-                mask[y][x] = (255, 255, 255)
+                mask[h-y-1][x] = (255, 255, 255)
             else:
-                mask[y][x] = (0, 0, 0)
+                mask[h-y-1][x] = (0, 0, 0)
     plt.imshow(cv2.cvtColor(np.float32(mask / 255), cv2.COLOR_BGR2RGB))
     plt.show()
     cv2.imwrite(path + '/' + 'mask.jpg', mask)
 
-def filterF(a, threshold):
-    if a > threshold:
-        return (255, 0, 0, 0)
-    else:
-        return (0, 0, 0, 0)
 
 def compute_centroid(im_array, threshold=100):
     tot = 0.0
@@ -69,12 +63,12 @@ def compute_light_directions(path):
     R = np.array([0, 0, 1])
     mask_image = cv2.imread(path+'/'+'mask.jpg')
     mask_image_gray =  cv2.cvtColor(mask_image, cv2.COLOR_BGR2GRAY)
-    mask_image_array = Image.fromarray(mask_image_gray)
+    mask_image_array = np.array(mask_image_gray)
     light_directions = []
     for image_file in image_list:
         image = cv2.imread(path+'/'+image_file)
         image_gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        image_array = Image.fromarray(image_gray)
+        image_array = np.array(image_gray)
         centroid = compute_centroid(image_array)
         dx = centroid[1] - cy
         dy = centroid[0] - cx
@@ -96,7 +90,19 @@ def avg_light_direction(path):
         for light in light_directions:
             output_file.write('%lf %lf %lf\n' % (light[0], light[1], light[2]))
 
-path = '../data/scholar'
-avg_light_direction(path)
-
+if __name__ =='__main__':
+    path = '../data/scholar'
+    #generate_mask(path)
+    avg_light_direction(path)
+    '''
+    img = cv2.imread(path+'/ref.JPG')
+    cx,cy,r = init_circle_data(path)
+    center=(int(cx),int(cy))
+    color = (0, 255, 0)  # 在OpenCV中，BGR顺序表示颜色
+    thickness = 2
+    cv2.circle(img, center, int(r), color, thickness)
+    cv2.imshow('Circle', img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+    '''
 
