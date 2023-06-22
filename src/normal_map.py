@@ -115,5 +115,5 @@ def main(path,animal):
 
 
 if __name__ == '__main__':
-    path = '../data/frog'
-    main(path,'frog')
+    path = '../data/cat'
+    main(path,'cat')
