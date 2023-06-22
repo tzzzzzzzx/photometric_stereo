@@ -101,18 +101,19 @@ def main(path,animal):
     normal_map,albedo_map = photometric_stereo(images_files,mask_image_file,lights_file)
     normal_map = np.array(normal_map)
     albedo_map = np.array(albedo_map)
-    scaled_normal_map = (normal_map * 255 / np.max(normal_map)).astype(np.uint8)
-    scaled_albedo_map = (albedo_map * 255 / np.max(albedo_map)).astype(np.uint8)
+
+    scaled_normal_map = (normal_map / np.max(normal_map) * 255).clip(0, 255).astype(np.uint8)
+    scaled_albedo_map = (albedo_map / np.max(albedo_map) * 255).clip(0, 255).astype(np.uint8)
 
 
-    plt.imshow(cv2.cvtColor(np.float32(scaled_normal_map / 255), cv2.COLOR_BGR2RGB))
+    plt.imshow(scaled_normal_map)
     plt.show()
 
-    plt.imshow(cv2.cvtColor(np.float32(scaled_albedo_map / 255), cv2.COLOR_BGR2RGB))
+    plt.imshow(scaled_albedo_map)
     plt.show()
 
 
 
 if __name__ == '__main__':
-    path = '../data/cat'
-    main(path,'cat')
+    path = '../data/frog'
+    main(path,'frog')
