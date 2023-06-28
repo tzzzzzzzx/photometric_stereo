@@ -65,20 +65,6 @@ def main(Image_name):
     normal = compute_surfNorm(I, L)
     normal = normalize(normal, axis=1) 
     
-    '''
-    #重渲染
-    print(normal)
-    L_re = np.array([0.109764,0.109764,0.98787])
-    I_re = np.dot(normal,L_re.T)
-    re=np.zeros((height,width),np.uint8)
-    for i in range(height):
-        for j in range(width):
-            re[i,j] = I_re[i*width+j]
-    cv2.imshow('重渲染', re)
-    cv2.waitKey()
-    cv2.destroyAllWindows() 
-    
-    '''
     
     N = np.reshape(normal.copy(),(height, width, 3))
     # RGB to BGR
