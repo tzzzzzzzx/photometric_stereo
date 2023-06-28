@@ -101,11 +101,9 @@ def main(path,animal):
     normal_map,albedo_map = photometric_stereo(images_files,mask_image_file,lights_file)
     normal_map = np.array(normal_map)
     albedo_map = np.array(albedo_map)
-
     scaled_normal_map = (normal_map / np.max(normal_map) * 255).clip(0, 255).astype(np.uint8)
     scaled_albedo_map = (albedo_map / np.max(albedo_map) * 255).clip(0, 255).astype(np.uint8)
-
-
+    print(scaled_normal_map.shape)
     plt.imshow(scaled_normal_map)
     plt.show()
     cv2.imwrite(path+'/Objects/normal.png',scaled_normal_map)
@@ -116,5 +114,5 @@ def main(path,animal):
 
 
 if __name__ == '__main__':
-    path = '../data/scholar'
-    main(path,'scholar')
+    path = '../data/cat'
+    main(path,'cat')
