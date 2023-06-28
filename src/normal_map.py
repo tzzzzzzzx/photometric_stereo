@@ -108,12 +108,13 @@ def main(path,animal):
 
     plt.imshow(scaled_normal_map)
     plt.show()
-
+    cv2.imwrite(path+'/Objects/normal.png',scaled_normal_map)
     plt.imshow(scaled_albedo_map)
+    cv2.imwrite(path + '/Objects/albedo.png', scaled_albedo_map)
     plt.show()
 
 
 
 if __name__ == '__main__':
-    path = '../data/cat'
-    main(path,'cat')
+    path = '../data/scholar'
+    main(path,'scholar')
