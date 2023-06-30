@@ -37,7 +37,7 @@ def main(Image_name):
         if not line:
             break
         if(i!=0):
-            line = line.split("\t")
+            line = line.split(" ")
             #print(line)
             line[2] = line[2].replace("\n",'')
             for l in range(3):

@@ -15,8 +15,8 @@ def compute_depth(mask,N):
     #print(no_pix)
     full2obj = np.zeros((im_h, im_w))
     for idx in range(np.size(obj_h)):
-        full2obj[obj_h[idx], obj_w[idx]] = idx
-    full2obj = np.round(full2obj).astype(int)
+        full2obj[obj_h[idx], obj_w[idx]] = int(idx)
+    #full2obj = np.round(full2obj).astype(int)
     M = scipy.sparse.lil_matrix((2*no_pix, no_pix))
     v = np.zeros((2*no_pix, 1))
 
@@ -33,7 +33,7 @@ def compute_depth(mask,N):
             
             row_idx = idx * 2
             if mask[h, w+1]:
-                idx_horiz = full2obj[h, w+1]
+                idx_horiz = int(full2obj[h, w+1])
                 M[row_idx, idx] = -1
                 M[row_idx, idx_horiz] = 1
                 if n_z==0:
@@ -41,7 +41,7 @@ def compute_depth(mask,N):
                 else:
                     v[row_idx] = -n_x / n_z
             elif mask[h, w-1]:
-                idx_horiz = full2obj[h, w-1]
+                idx_horiz = int(full2obj[h, w-1])
                 M[row_idx, idx_horiz] = -1
                 M[row_idx, idx] = 1
                 if n_z==0:
@@ -51,7 +51,7 @@ def compute_depth(mask,N):
     
             row_idx = idx * 2 + 1
             if mask[h+1, w]:
-                idx_vert = full2obj[h+1, w]
+                idx_vert = int(full2obj[h+1, w])
                 M[row_idx, idx] = 1
                 M[row_idx, idx_vert] = -1
                 if n_z==0:
@@ -59,7 +59,7 @@ def compute_depth(mask,N):
                 else:
                     v[row_idx] = -n_y / n_z
             elif mask[h-1, w]:
-                idx_vert = full2obj[h-1, w]
+                idx_vert = int(full2obj[h-1, w])
                 M[row_idx, idx_vert] = 1
                 M[row_idx, idx] = -1
                 if n_z==0:
