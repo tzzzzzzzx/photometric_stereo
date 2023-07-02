@@ -1,18 +1,30 @@
 import cv2
 import numpy as np
 import os
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import normalize, MinMaxScaler
 
 from matplotlib import pyplot as plt
 from heightMap import compute_depth, save_depthmap, display_depthmap
 from norm_vector import compute_surfNorm
 from point_cloud import visualize
+import random
 
 
 #显示图片
 def display(img):
     plt.imshow(cv2.cvtColor(np.float32(img / 255), cv2.COLOR_BGR2RGB))
     plt.show()
+
+
+def generate_random_light():
+    u = random.random()
+    v = random.random()
+    theta = 2 * np.pi * u
+    phi = np.arccos(2 * v - 1)
+    x = np.sin(theta) * np.sin(phi)
+    y = np.cos(theta) * np.sin(phi)
+    z = np.cos(phi)
+    return (x, y, z) if z > 0 else (-x, -y, -z)
 
 
 def main(Image_name):
@@ -38,7 +50,7 @@ def main(Image_name):
         if not line:
             break
         if (i != 0):
-            line = line.split("\t")
+            line = line.split()
             #print(line)
             line[2] = line[2].replace("\n", '')
             for l in range(3):
@@ -46,7 +58,7 @@ def main(Image_name):
             L.append(tuple(line))
         i += 1
     file.close()
-    L = np.array(L)
+    L = np.array(L).astype(np.float32)
 
     # =================obtain picture infor=================
     dir = 'data\\' + Image_name + '\\Objects'
@@ -54,14 +66,14 @@ def main(Image_name):
     I = []
     for i in range(len(imgList)):
         picture = cv2.imread(dir + '\\' + imgList[i])
-        picture = cv2.cvtColor(picture, cv2.COLOR_RGB2GRAY)
+        picture = cv2.cvtColor(picture, cv2.COLOR_BGR2GRAY)
         height, width = picture.shape  #(340, 512)
         picture = picture.reshape((-1, 1)).squeeze(1)
         I.append(picture)
-    I = np.array(I)
+    I = np.array(I).astype(np.float32)
 
     # =================compute surface normal vector=================
-    normal = compute_surfNorm(I, L)
+    normal, kd = compute_surfNorm(I, L)
     normal = normalize(normal, axis=1)
 
     N = np.reshape(normal.copy(), (height, width, 3))
@@ -81,7 +93,8 @@ def main(Image_name):
 
     # =================compute depth map=================
 
-    Z = compute_depth(mask=mask2.copy(), N=N.copy())
+    Z = compute_depth(mask=mask2.copy(),
+                      N=np.reshape(normal.copy(), (height, width, 3)))
     depth_path = str('result//' + Image_name + '//depth_' + Image_name +
                      '.npy')
     save_depthmap(Z, filename=depth_path)
@@ -89,6 +102,21 @@ def main(Image_name):
 
     # =================generate the obj file to visualize=================
     visualize(depth_path, Image_name)
+
+    # =================generate random light and do rendering=================
+    new_light = L[1]
+    print(f"new_light: {new_light}")
+
+    new_img = np.zeros(mask2.shape)
+    normal_reshape = np.reshape(normal, (mask2.shape[0], mask2.shape[1], 3))
+    kd_reshape = np.reshape(kd, (mask2.shape[0], mask2.shape[1], 1))
+    new_img = kd_reshape * normal_reshape @ new_light
+
+    new_img = MinMaxScaler(feature_range=(0, 255)).fit_transform(new_img)
+    new_img *= mask2 > 0
+
+    cv2.imshow('rendering', new_img)
+    cv2.waitKey(0)
 
 
 if __name__ == "__main__":
