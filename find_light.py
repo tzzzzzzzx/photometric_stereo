@@ -2,15 +2,6 @@ import numpy as np
 import cv2
 import os
 
-def Avg(L1,L2):
-    L = []
-    for i in range(len(L1)):
-        l = []
-        for j in range(len(L1[0])):
-            l.append(L1[i][j]/2+L2[i][j]/2)
-        L.append(l)
-    return L
-
 def find_light(img):
 
     img = cv2.GaussianBlur(img, (9, 9), 2.5)
@@ -22,12 +13,18 @@ def find_light(img):
 def light(P,C,R):
     L = []
     for i in range(len(P)):
-        Nx = P[i][0]-C[0]
-        Ny = P[i][1]-C[1]
-        Nz = (C[2]**2-Nx**2-Ny**2)**0.5
-        N = np.array([Nx,Ny,Nz])
-        l = np.dot(2*(np.dot(N,R.T)),N)-R
-        l = l/np.linalg.norm(l)
+        Nx = P[i][0] - C[0]
+        Ny = P[i][1] - C[1]
+        Ny = -Ny
+        Nz = (C[2] ** 2. - Nx ** 2. - Ny ** 2.)
+        if Nz < 0:
+            Nz = -np.sqrt(Nz)
+        else:
+            Nz = np.sqrt(Nz)
+        N = np.array([Nx, Ny, Nz])
+        # N = np.array([Ny, Nx, Nz])
+        l = 2 * (N @ R) * N - R
+        l = l / np.linalg.norm(l)
         L.append(l)
     return L
 
