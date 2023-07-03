@@ -104,7 +104,7 @@ def main(Image_name):
     visualize(depth_path, Image_name)
 
     # =================generate random light and do rendering=================
-    new_light = L[1]
+    new_light = generate_random_light()
     print(f"new_light: {new_light}")
 
     new_img = np.zeros(mask2.shape)
@@ -114,6 +114,7 @@ def main(Image_name):
 
     new_img = MinMaxScaler(feature_range=(0, 255)).fit_transform(new_img)
     new_img *= mask2 > 0
+    new_img = new_img.astype(np.uint8)
 
     cv2.imshow('rendering', new_img)
     cv2.waitKey(0)
