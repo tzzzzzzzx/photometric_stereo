@@ -18,13 +18,8 @@ def compute_depth(mask, N):
     for idx in range(np.size(obj_h)):
         full2obj[obj_h[idx], obj_w[idx]] = int(idx)
     #full2obj = np.round(full2obj).astype(int)
-<<<<<<< HEAD:tzy/heightMap.py
     M = scipy.sparse.lil_matrix((2 * no_pix, no_pix))
     v = np.zeros((2 * no_pix, 1))
-=======
-    M = scipy.sparse.lil_matrix((2*no_pix, no_pix))
-    v = np.zeros((2*no_pix, 1))
->>>>>>> 79f742539c141b280d38b6e5ac9f6eeacb9bb963:heightMap.py
 
     # ================= fill the M&V =================
     for idx in range(no_pix):
@@ -38,26 +33,16 @@ def compute_depth(mask, N):
             n_z = N[h, w, 2]
 
             row_idx = idx * 2
-<<<<<<< HEAD:tzy/heightMap.py
             if mask[h, w + 1]:
                 idx_horiz = int(full2obj[h, w + 1])
-=======
-            if mask[h, w+1]:
-                idx_horiz = int(full2obj[h, w+1])
->>>>>>> 79f742539c141b280d38b6e5ac9f6eeacb9bb963:heightMap.py
                 M[row_idx, idx] = -1
                 M[row_idx, idx_horiz] = 1
                 if n_z == 0:
                     v[row_idx] = 0
                 else:
                     v[row_idx] = -n_x / n_z
-<<<<<<< HEAD:tzy/heightMap.py
             elif mask[h, w - 1]:
                 idx_horiz = int(full2obj[h, w - 1])
-=======
-            elif mask[h, w-1]:
-                idx_horiz = int(full2obj[h, w-1])
->>>>>>> 79f742539c141b280d38b6e5ac9f6eeacb9bb963:heightMap.py
                 M[row_idx, idx_horiz] = -1
                 M[row_idx, idx] = 1
                 if n_z == 0:
@@ -66,26 +51,16 @@ def compute_depth(mask, N):
                     v[row_idx] = -n_x / n_z
 
             row_idx = idx * 2 + 1
-<<<<<<< HEAD:tzy/heightMap.py
             if mask[h + 1, w]:
                 idx_vert = int(full2obj[h + 1, w])
-=======
-            if mask[h+1, w]:
-                idx_vert = int(full2obj[h+1, w])
->>>>>>> 79f742539c141b280d38b6e5ac9f6eeacb9bb963:heightMap.py
                 M[row_idx, idx] = 1
                 M[row_idx, idx_vert] = -1
                 if n_z == 0:
                     v[row_idx] = 0
                 else:
                     v[row_idx] = -n_y / n_z
-<<<<<<< HEAD:tzy/heightMap.py
             elif mask[h - 1, w]:
                 idx_vert = int(full2obj[h - 1, w])
-=======
-            elif mask[h-1, w]:
-                idx_vert = int(full2obj[h-1, w])
->>>>>>> 79f742539c141b280d38b6e5ac9f6eeacb9bb963:heightMap.py
                 M[row_idx, idx_vert] = 1
                 M[row_idx, idx] = -1
                 if n_z == 0:
